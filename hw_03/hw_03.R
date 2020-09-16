@@ -8,8 +8,21 @@
 
 library(tidyverse)
 
+# Identifying class types
 
-# Read the file "med_enz.csv"  
+class(c(TRUE, FALSE, FALSE))
+class(c(1, 2, 3))
+class(c(1.3, 2.4, 3.5))
+class(c("a", "b", "c"))
+
+class(c(1, 2, "a")) # This is a character vector because one 
+# of the components is a character
+
+class(c(TRUE, FALSE, 2)) # This is a numeric vector because
+# the number 2 is numeric, and TRUE and FALSE are stored a 1 & 0
+
+
+  # Read the file "med_enz.csv"  
 
 med_enz <- read.csv("data/med_enz.csv")
 

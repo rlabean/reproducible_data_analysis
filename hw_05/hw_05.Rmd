@@ -1,0 +1,59 @@
+---
+title: "Homework 5: Data Transformation, Exploration, and Plotting"
+output: github_document
+author: Robert LaBean
+---
+
+
+```{r include = FALSE}
+
+
+library(tidyverse)
+library(nycflights13)
+library(dplyr)
+
+```
+
+Code to open documention about flights.
+```{r}
+
+?nycflights13::flights
+
+```
+
+Using the glimpse function to look at the data inside flights.
+```{r}
+
+glimpse(flights)
+
+```
+There are `r nrow(flights)` rows in flights and `r ncol(flights)` columns.
+
+Create a dataframe of only flights that departed 2 hours late or more.
+```{r} 
+
+late_flights <- filter(flights, dep_delay >=2) 
+percent_late_flights <-
+  signif((nrow(late_flights)/nrow(flights))*100,3)
+percent_late_flights # This is the percentage of flights that departed 2 hours late or later,
+# rounded to 3 significant figures/
+
+
+```
+`r percent_late_flights`% of flights in 2013 were 2 hours late or more. 
+
+Create a column that contains combined airline and flight number (e.g., "UA5401").
+```{r}
+
+airline_num <- mutate(flights, flightnum = paste0(flights$carrier, flights$flight))
+airline_num # This column is carrier + flight number
+
+```
+
+Use group_by(), summarise(), and n() to make a data frame showing how many flights each aircraft (tail_num()) flew for each carrier throughout the entire data set. 
+```{r}
+
+num_flight_tot <- flights %>%
+  group_by(carrier, tailnum)%>%
+  summarise(numflights = n())
+num_flight_tot # This column is the number of flights each tail number has flown for entire set of data

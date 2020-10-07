@@ -1,0 +1,130 @@
+---
+title: "Good and Bad Plot Example"
+author: Robert LaBean
+output: github_document
+---
+Anyone who has ever had a delayed flight knows how frustrating it can be. Sitting in an airport when you're trying to get to your vacation is miserable. What if there was a way to statistically identify the airline carrier that was most probable to have late flights? This way one could purchase tickets and feel confident they were on a carrier that had a track record of on time flights.
+
+We'll need the tidyverse and nycflights13 libraries for this. 
+``` {r}
+library(tidyverse)
+library(nycflights13)
+```
+
+Let's take a look at the nycflights13 data first.
+```{r}
+glimpse(flights)
+```
+
+It looks like the information we need is right there. This table has listing for carrier, arrival delay, and departure delay. 
+
+Let's make a plot that shows the carriers, and the count of their respective flights that arrive at their destination late (because vacation is about spending the most amount of time away, right?).
+```{r}
+late_carriers <- filter(flights, arr_delay > 0) %>%
+  select("carrier", "arr_delay") %>%
+  pivot_longer("carrier") %>%
+  count(value)
+# This selects only the flights that arrived >0 minutes late
+# and sums the number of times each carrier appears
+glimpse(late_carriers)
+```
+
+So, we have a listing of the carriers, and how many times they had a flight that arrived late in 2013. Let's turn this into a plot.
+
+```{r}
+bad_plot <- ggplot(data = late_carriers) +
+  geom_col(mapping = aes(x = value, y = n))
+print(bad_plot)
+```
+
+Ok, not so bad. You can see that carrier EV had the most late flights, and carrier OO had the least. We can do worse than this though. Let's try to keep the exact same data, and the overall 'style' of the plot and make it very hard to easily read. 
+
+```{r}
+bad_plot <- ggplot(data = late_carriers) +
+  geom_col(mapping = aes(x = value, y = n)) + 
+  coord_polar("y", start = 0)
+print(bad_plot)
+```
+
+Ok, plotting on a polar coordinate system is terrible, let's try and make it worse with some terrible colors. Since this is a print publication we went with all gray-scale colors and, since our ink budget is pretty low, we will go with a minimal background, and just the outlines of the bars. 
+
+```{r}
+bad_plot <- ggplot(data = late_carriers, c = colors()) +
+  geom_col(mapping = aes(x = value, y = n), fill = "NA", colour = "grey80") + 
+  theme_minimal() + 
+  coord_polar("y", start = 0) 
+print(bad_plot)
+```
+
+Now we just need some titles and this plot will be perfect. 
+
+```{r}
+bad_plot <- ggplot(data = late_carriers, c = colors()) +
+  geom_col(mapping = aes(x = value, y = n), fill = "NA", colour = "grey75") + 
+  theme_minimal() + 
+  ggtitle("Late Flights") + 
+  xlab("Airline") + 
+  coord_polar("y", start = 0) 
+print(bad_plot)
+```
+
+Ok here we have a terribly hard to understand plot now. Let's try and do this better. Let's go back to the original bar plot.
+
+```{r}
+bad_plot <- ggplot(data = late_carriers) +
+  geom_col(mapping = aes(x = value, y = n))
+print(bad_plot)
+```
+
+This isn't terrible, but the data isn't great. Just because one airline has more late flights doesn't mean much. They could also be operating a much larger fleet. Secondly, setting our 'late' data-point at >0 minutes past arrival date is a bit sensitive. Let's try and come up with a better way to calculate how late a certain airline is. Let's start with selecting the carriers that all had arrivals more than 30 minutes late.
+
+```{r}
+late_flights <- filter(flights, arr_delay > 30) %>%
+  select("carrier", "arr_delay") %>%
+  pivot_longer("carrier") %>%
+  count(value)
+glimpse(late_flights)  
+```
+
+Selecting 30 minutes is a bit more reasonable for a late flight. Let's also normalize by calculating the percent of the airlines total flights that were late. 
+
+```{r}
+glimpse(flights)
+
+
+late_flights <- filter(flights, arr_delay > 30) %>%
+  select("carrier", "arr_delay") %>%
+  pivot_longer("carrier") %>%
+  count(value) # Here we are selecting flights with greater than 30 minute delay and counting the occurrences
+glimpse(late_flights)  
+
+total_flights <- select(flights, "carrier") %>%
+  pivot_longer("carrier") %>%
+  count(value)
+
+percent_late_arr <- 
+  select(late_flights, n)/select(total_flights, n)*100 # This is to calculate the percentage 
+# of flights that were late by >30 minutes for each carrier
+late_arr <- bind_cols(select(total_flights, "value"), 
+                     percent_late_arr)
+glimpse(late_arr)
+```
+
+So, now we have our data, arrivals greater than 30 minutes late normalized as a percentage of total carrier traffic. Let's put this data into the first 'bad plot' we made. 
+
+```{r}
+good_plot <- ggplot(data = late_arr) +
+  geom_col(mapping = aes(x = value, y = n))
+print(good_plot)
+```
+
+This is getting to a point where the data makes sense. Let's pretty this up and make it a bit nicer. 
+
+```{r}
+good_plot <- ggplot(data = late_arr, c = colors()) +
+  geom_col(mapping = aes(x = value, y = n), fill = "grey50", color = "black") +
+  theme_light() +
+  xlab("Airline") +
+  ylab("Percent of Late Arrivals") +
+  ggtitle("Percent of Flights that Arrived More than 30 Minutes Late Sorted by Airline")
+print(good_plot)

@@ -1,0 +1,77 @@
+---
+title: "Homework 8"
+author: Robert LaBean
+output: github_document
+---
+
+
+```{r, results='hide'}
+library(tidyverse)
+library(nycflights13)
+library(babynames)
+
+```
+
+Creating and accessing lists. 
+
+```{r, tidy=TRUE}
+mylist <- list(cars_df = mtcars, b_names_df = babynames, flights_df = flights)
+
+glimpse(mylist$cars_df)
+glimpse(mylist[2])
+glimpse(mylist[["flights_df"]])
+
+```
+
+Access the mtcars dataframe.
+
+```{r, tidy=TRUE}
+
+glimpse(mtcars$mpg)
+glimpse(mtcars[["mpg"]])
+
+```
+
+Adding "displacement per cylinder" column to mtcars.
+
+```{r, tidy=TRUE}
+
+# disp_cyl_mtcars <- mutate(mtcars, disp_cyl = mtcars$disp / mtcars$cyl)
+# glimpse(disp_cyl_mtcars)
+
+mtcars$disp_per_cyl = mtcars$disp / mtcars$cyl
+glimpse(mtcars)
+
+
+```
+
+Working with factors. 
+
+```{r, tidy=TRUE}
+
+num.vec <- c(8, 6, 7, 5, 3, 0, 9)
+
+as.factor(num.vec)
+
+as.numeric(num.vec)
+
+```
+Load the BLS 2019 National Salary Data for all occupations, and since we're only interested in geoscientist data we will filter them out. 
+
+```{r, tidy=TRUE}
+# salary_data <- readxl::read_excel("data/salary_data.xlsx")
+salary_data <- read_csv("data/salary_data.csv") %>%
+  filter(occ_code == "19-2042") %>%
+  select(area_title, a_mean)
+glimpse(salary_data)
+```
+Since we want to compare the data state by state, we need to normalize by a cost of living index.
+``` {r, tidy = TRUE}
+
+col_index <- read.csv("data/col_index.csv", fileEncoding = "UTF-8-BOM")
+norm_salary_data <- left_join(salary_data, col_index)
+as.numeric(gsub(",", "", salary_data$a_mean)
+glimpse(norm_salary_data)
+
+```
+

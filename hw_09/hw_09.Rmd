@@ -1,0 +1,11 @@
+---
+title: "Homework 09"
+output: github_document
+author: Robert LaBean
+---
+
+First, let's write the equations.
+
+```{r}
+
+variance <-

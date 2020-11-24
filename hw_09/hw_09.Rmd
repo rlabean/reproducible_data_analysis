@@ -4,8 +4,45 @@ output: github_document
 author: Robert LaBean
 ---
 
-First, let's write the equations.
+```{r}
+library(tidyverse)
+
+```
+
+
+First, let's write the equations for variance.
+
+# ```{r}
+# 
+# variance <- function(x, sample_mean){
+#   varx <- (1/(x-1))*sum(1:x)*()
+# }
+# 
+# ```
 
 ```{r}
 
-variance <-
+normalize_salary <- function(occ_code) {
+  library(readxl)
+  salary_data <- read_xlsx("data/state_M2019_dl.xlsx") %>%
+  filter(occ_code == "occ_code") %>%
+  select(area_title, a_mean)
+  col_index <- read.csv("data/col_index.csv", fileEncoding = "UTF-8-BOM")
+norm_salary_data <- left_join(salary_data, col_index)
+norm_salary_data$normalized = as.numeric(norm_salary_data$a_mean) / norm_salary_data$index
+
+salary_plot <- ggplot(norm_salary_data) + 
+  geom_col(mapping = aes(area_title, normalized))+
+  theme(axis.text.x = element_text(angle = 45))
+print(salary_plot)
+}
+
+```
+
+Running our function
+
+```{r}
+
+normalize_salary(11-3131)
+
+```

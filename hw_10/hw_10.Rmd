@@ -1,0 +1,44 @@
+---
+title: "Homework 10"
+output: github_document
+author: Robert LaBean
+---
+``` {r echo = FALSE}
+
+library(tidyverse)
+
+```
+
+Generating a linear model for the diamonds data-set.
+
+```{r}
+
+lm_diamonds <- lm(diamonds$price ~ diamonds$carat)
+summary(lm_diamonds)
+
+```
+
+Now we want to make a model of price as a function of carat and color.
+
+``` {r}
+
+lm_diamonds2 <- lm(diamonds$price ~ diamonds$carat + diamonds$color)
+summary(lm_diamonds2)
+
+# I'm doing two models to see what the difference in coercing diamonds$color into a character vector first has. 
+
+lm_diamonds3 <- lm(diamonds$price ~ diamonds$carat + as.character(diamonds$color))
+summary(lm_diamonds2)
+
+```
+
+Now we are going to plot the raw data. 
+
+```{r}
+diam_plot_pc <- ggplot(diamonds) + 
+  geom_point(mapping = aes(x = carat, y = price, colour = color)) +
+  geom_line()
+print(diam_plot_pc)
+
+```
+

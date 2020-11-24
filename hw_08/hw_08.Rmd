@@ -65,6 +65,7 @@ salary_data <- read_xlsx("data/state_M2019_dl.xlsx") %>%
   filter(occ_code == "19-2042") %>%
   select(area_title, a_mean)
   glimpse(salary_data)
+  
 ```
 Since we want to compare the data state by state, we need to normalize by a cost of living index.
 ``` {r, tidy = TRUE}

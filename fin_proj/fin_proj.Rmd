@@ -46,9 +46,31 @@ Now, I'm combining both data-sets into one. I'm also cleaning the data a bit as 
 
 ```{r}
 
-costlive_index <- select(state_list, State, Index) %>%
-  filter(state_list, state == "!Puerto Rico" , state == "!District of Columbia")
-glimpse(state_list)
+col_index <- filter(state_list, !grepl("District of Columbia|Puerto Rico|US", State)) %>%
+  arrange(State)
+salary_data <- inner_join(raw_salary_data, col_index, by = c("area_title" = "State"))
+
+
+glimpse(col_index)
+
+```
+
+Finally we're going to normalize all the salaries with our cost of living index and plot it on a chart to see which states typically have the highest salaries compared to their respective cost of living. 
+
+```{r}
+
+salary_data$normalized = as.numeric(salary_data$a_mean) / (salary_data$Index/100)
+
+plot_sal_data <- function(x, y){
+ 
+salary_plot <- ggplot(salary_data) +
+  theme(axis.text.x = element_text(angle = 45))+
+    geom_col(mapping = aes(x, y))
+  
+print(salary_plot)
+    }
+
+plot_sal_data(area_title, a_mean)
 
 
 ```

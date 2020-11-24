@@ -1801,22 +1801,6 @@ summary {
 <!-- rnb-text-begin -->
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-output-begin eyJkYXRhIjoiUmVnaXN0ZXJlZCBTMyBtZXRob2RzIG92ZXJ3cml0dGVuIGJ5ICdkYnBseXInOlxuICBtZXRob2QgICAgICAgICBmcm9tXG4gIHByaW50LnRibF9sYXp5ICAgICBcbiAgcHJpbnQudGJsX3NxbCAgICAgIFxuLS0gQXR0YWNoaW5nIHBhY2thZ2VzIC0tLS0tLS0gdGlkeXZlcnNlIDEuMy4wIC0tXG52IGdncGxvdDIgMy4zLjIgICAgIHYgcHVycnIgICAwLjMuNFxudiB0aWJibGUgIDMuMC40ICAgICB2IGRwbHlyICAgMS4wLjJcbnYgdGlkeXIgICAxLjEuMiAgICAgdiBzdHJpbmdyIDEuNC4wXG52IHJlYWRyICAgMS40LjAgICAgIHYgZm9yY2F0cyAwLjUuMFxuLS0gQ29uZmxpY3RzIC0tLS0tLS0tLS0gdGlkeXZlcnNlX2NvbmZsaWN0cygpIC0tXG54IGRwbHlyOjpmaWx0ZXIoKSAgICAgICAgIG1hc2tzIHN0YXRzOjpmaWx0ZXIoKVxueCByZWFkcjo6Z3Vlc3NfZW5jb2RpbmcoKSBtYXNrcyBydmVzdDo6Z3Vlc3NfZW5jb2RpbmcoKVxueCBkcGx5cjo6bGFnKCkgICAgICAgICAgICBtYXNrcyBzdGF0czo6bGFnKClcbnggcHVycnI6OnBsdWNrKCkgICAgICAgICAgbWFza3MgcnZlc3Q6OnBsdWNrKClcbiJ9 -->
-<pre><code>Registered S3 methods overwritten by &#39;dbplyr&#39;:
-  method         from
-  print.tbl_lazy     
-  print.tbl_sql      
--- Attaching packages ------- tidyverse 1.3.0 --
-v ggplot2 3.3.2     v purrr   0.3.4
-v tibble  3.0.4     v dplyr   1.0.2
-v tidyr   1.1.2     v stringr 1.4.0
-v readr   1.4.0     v forcats 0.5.0
--- Conflicts ---------- tidyverse_conflicts() --
-x dplyr::filter()         masks stats::filter()
-x readr::guess_encoding() masks rvest::guess_encoding()
-x dplyr::lag()            masks stats::lag()
-x purrr::pluck()          masks rvest::pluck()</code></pre>
-<!-- rnb-output-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 <p>Accessing the Bureau of Labor Statistics most current state salary data.</p>
@@ -1856,20 +1840,34 @@ glimpse(state_list)
 <p>Now, I’m combining both data-sets into one. I’m also cleaning the data a bit as we aren’t going to be needing a lot of the information from the MERIC data-set</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuXG5jb3N0bGl2ZV9pbmRleCA8LSBzZWxlY3Qoc3RhdGVfbGlzdCwgU3RhdGUsIEluZGV4KSAlPiVcbiAgZmlsdGVyKHN0YXRlX2xpc3QsIHN0YXRlID09IFwiIVB1ZXJ0byBSaWNvXCIgLCBzdGF0ZSA9PSBcIiFEaXN0cmljdCBvZiBDb2x1bWJpYVwiKVxuYGBgIn0= -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuXG5jb2xfaW5kZXggPC0gZmlsdGVyKHN0YXRlX2xpc3QsICFncmVwbChcIkRpc3RyaWN0IG9mIENvbHVtYmlhfFB1ZXJ0byBSaWNvfFVTXCIsIFN0YXRlKSkgJT4lXG4gIGFycmFuZ2UoU3RhdGUpXG5zYWxhcnlfZGF0YSA8LSBpbm5lcl9qb2luKHJhd19zYWxhcnlfZGF0YSwgY29sX2luZGV4LCBieSA9IGMoXCJhcmVhX3RpdGxlXCIgPSBcIlN0YXRlXCIpKVxuXG5cbmdsaW1wc2UoY29sX2luZGV4KVxuXG5gYGAifQ== -->
 <pre class="r"><code>
-costlive_index &lt;- select(state_list, State, Index) %&gt;%
-  filter(state_list, state == &quot;!Puerto Rico&quot; , state == &quot;!District of Columbia&quot;)</code></pre>
+col_index &lt;- filter(state_list, !grepl(&quot;District of Columbia|Puerto Rico|US&quot;, State)) %&gt;%
+  arrange(State)
+salary_data &lt;- inner_join(raw_salary_data, col_index, by = c(&quot;area_title&quot; = &quot;State&quot;))
+
+
+glimpse(col_index)
+</code></pre>
 <!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiRXJyb3I6IFByb2JsZW0gd2l0aCBgZmlsdGVyKClgIGlucHV0IGAuLjFgLlxueCBJbnB1dCBgLi4xJFN0YXRlYCBtdXN0IGJlIGEgbG9naWNhbCB2ZWN0b3IsIG5vdCBhIGNoYXJhY3Rlci5cbmkgSW5wdXQgYC4uMWAgaXMgYHN0YXRlX2xpc3RgLlxuUnVuIGBybGFuZzo6bGFzdF9lcnJvcigpYCB0byBzZWUgd2hlcmUgdGhlIGVycm9yIG9jY3VycmVkLlxuIn0= -->
-<pre><code>Error: Problem with `filter()` input `..1`.
-x Input `..1$State` must be a logical vector, not a character.
-i Input `..1` is `state_list`.
-Run `rlang::last_error()` to see where the error occurred.</code></pre>
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p>Finally we’re going to normalize all the salaries with our cost of living index and plot it on a chart to see which states typically have the highest salaries compared to their respective cost of living.</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxucGxvdF9zYWxfZGF0YShhcmVhX3RpdGxlLCBhX21lYW4pXG5cbmBgYCJ9 -->
+<pre class="r"><code>plot_sal_data(area_title, a_mean)
+</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiRXJyb3IgaW4gRlVOKFhbW2ldXSwgLi4uKSA6IG9iamVjdCAnYXJlYV90aXRsZScgbm90IGZvdW5kXG4ifQ== -->
+<pre><code>Error in FUN(X[[i]], ...) : object &#39;area_title&#39; not found</code></pre>
 <!-- rnb-output-end -->
+<!-- rnb-plot-begin eyJoZWlnaHQiOjQyNy4wNzA1LCJ3aWR0aCI6NjkxLCJzaXplX2JlaGF2aW9yIjowLCJjb25kaXRpb25zIjpbXX0= -->
+<p><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAArMAAAGrCAMAAADkVO9CAAAAA1BMVEX///+nxBvIAAAACXBIWXMAAA7DAAAOwwHHb6hkAAABNUlEQVR4nO3BMQEAAADCoPVPbQlPoAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAB4GYJ4AAHboOv6AAAAAElFTkSuQmCC" /></p>
+<!-- rnb-plot-end -->
 <!-- rnb-chunk-end -->
 
-<div id="rmd-source-code">LS0tDQp0aXRsZTogIkdlb3NjaWVuY2UgU2FsYXJ5IFN1cnZleSINCm91dHB1dDogaHRtbF9ub3RlYm9vaw0KYXV0aG9yOiBSb2JlcnQgTGFCZWFuDQotLS0NCg0KYGBge3IgZWNobz1GQUxTRX0NCg0KbGlicmFyeSh0aWR5dmVyc2UpDQpsaWJyYXJ5KHJlYWR4bCkNCmxpYnJhcnkocnZlc3QpDQoNCmBgYA0KDQpBY2Nlc3NpbmcgdGhlIEJ1cmVhdSBvZiBMYWJvciBTdGF0aXN0aWNzIG1vc3QgY3VycmVudCBzdGF0ZSBzYWxhcnkgZGF0YS4NCg0KYGBge3J9DQoNCnVybCA8LSAiaHR0cHM6Ly93d3cuYmxzLmdvdi9vZXMvc3BlY2lhbC5yZXF1ZXN0cy9vZXNtMTlzdC56aXAiDQoNCnRlbXAgPC0gdGVtcGZpbGUoKQ0KdGVtcDIgPC0gdGVtcGZpbGUoKQ0KDQpkb3dubG9hZC5maWxlKHVybCwgdGVtcCkNCnVuemlwKHppcGZpbGUgPSB0ZW1wLCBleGRpciA9IHRlbXAyKQ0KcmF3X3NhbGFyeV9kYXRhIDwtIHJlYWRfZXhjZWwoZmlsZS5wYXRoKHRlbXAyLCAib2VzbTE5c3Qvc3RhdGVfTTIwMTlfZGwueGxzeCIpKQ0KDQp1bmxpbmsoYyh0ZW1wLCB0ZW1wMikpDQoNCmBgYA0KDQpOZXh0LCB3ZSdyZSBnb2luZyB0byBzY3JhcGUgdGhlIE1pc3NvdXJpIEVjb25vbWljIFJlc2VhcmNoIGFuZCBJbmZvcm1hdGlvbiBDZW50ZXIgKE1FUklDKSB3ZWIgcGFnZSBhbiB1c2UgdGhlaXIgY2FsY3VsYXRpb24gZm9yIGEgY29zdCBvZiBsaXZpbmcgaW5kZXguIEkgbGlrZSB0aGlzIGNhbGN1bGF0aW9uIGJlY2F1c2UgdGhleSB0YWtlIHRoZSBjb3N0IG9mIGxpdmluZyBpbmRleCBmb3IgZWFjaCBjaXR5IGluIGEgc3RhdGUgYW5kIGF2ZXJhZ2UgaXQgdG8gbWFrZSBhIHN0YXRlIGNvc3Qgb2YgbGl2aW5nIGluZGV4Lg0KDQpgYGB7cn0NCg0Kc2NyYXBlX3VybCA8LSAiaHR0cHM6Ly9tZXJpYy5tby5nb3YvZGF0YS9jb3N0LWxpdmluZy1kYXRhLXNlcmllcyINCndlYnBhZ2UgPC0gcmVhZF9odG1sKHNjcmFwZV91cmwpDQp3ZWJfdGFibGVzIDwtIGh0bWxfbm9kZXMod2VicGFnZSwgInRhYmxlIikNCnN0YXRlX2xpc3QgPC0gaHRtbF90YWJsZSh3ZWJfdGFibGVzKVtbMV1dDQoNCmdsaW1wc2Uoc3RhdGVfbGlzdCkNCg0KYGBgDQoNCk5vdywgSSdtIGNvbWJpbmluZyBib3RoIGRhdGEtc2V0cyBpbnRvIG9uZS4gSSdtIGFsc28gY2xlYW5pbmcgdGhlIGRhdGEgYSBiaXQgYXMgd2UgYXJlbid0IGdvaW5nIHRvIGJlIG5lZWRpbmcgYSBsb3Qgb2YgdGhlIGluZm9ybWF0aW9uIGZyb20gdGhlIE1FUklDIGRhdGEtc2V0DQoNCmBgYHtyfQ0KDQpjb3N0bGl2ZV9pbmRleCA8LSBzZWxlY3Qoc3RhdGVfbGlzdCwgU3RhdGUsIEluZGV4KSAlPiUNCiAgZmlsdGVyKHN0YXRlX2xpc3QsIHN0YXRlID09ICIhUHVlcnRvIFJpY28iICwgc3RhdGUgPT0gIiFEaXN0cmljdCBvZiBDb2x1bWJpYSIpDQpnbGltcHNlKHN0YXRlX2xpc3QpDQoNCg0KYGBg</div>
+<div id="rmd-source-code">LS0tDQp0aXRsZTogIkdlb3NjaWVuY2UgU2FsYXJ5IFN1cnZleSINCm91dHB1dDogaHRtbF9ub3RlYm9vaw0KYXV0aG9yOiBSb2JlcnQgTGFCZWFuDQotLS0NCg0KYGBge3IgZWNobz1GQUxTRX0NCg0KbGlicmFyeSh0aWR5dmVyc2UpDQpsaWJyYXJ5KHJlYWR4bCkNCmxpYnJhcnkocnZlc3QpDQoNCmBgYA0KDQpBY2Nlc3NpbmcgdGhlIEJ1cmVhdSBvZiBMYWJvciBTdGF0aXN0aWNzIG1vc3QgY3VycmVudCBzdGF0ZSBzYWxhcnkgZGF0YS4NCg0KYGBge3J9DQoNCnVybCA8LSAiaHR0cHM6Ly93d3cuYmxzLmdvdi9vZXMvc3BlY2lhbC5yZXF1ZXN0cy9vZXNtMTlzdC56aXAiDQoNCnRlbXAgPC0gdGVtcGZpbGUoKQ0KdGVtcDIgPC0gdGVtcGZpbGUoKQ0KDQpkb3dubG9hZC5maWxlKHVybCwgdGVtcCkNCnVuemlwKHppcGZpbGUgPSB0ZW1wLCBleGRpciA9IHRlbXAyKQ0KcmF3X3NhbGFyeV9kYXRhIDwtIHJlYWRfZXhjZWwoZmlsZS5wYXRoKHRlbXAyLCAib2VzbTE5c3Qvc3RhdGVfTTIwMTlfZGwueGxzeCIpKQ0KDQp1bmxpbmsoYyh0ZW1wLCB0ZW1wMikpDQoNCmBgYA0KDQpOZXh0LCB3ZSdyZSBnb2luZyB0byBzY3JhcGUgdGhlIE1pc3NvdXJpIEVjb25vbWljIFJlc2VhcmNoIGFuZCBJbmZvcm1hdGlvbiBDZW50ZXIgKE1FUklDKSB3ZWIgcGFnZSBhbiB1c2UgdGhlaXIgY2FsY3VsYXRpb24gZm9yIGEgY29zdCBvZiBsaXZpbmcgaW5kZXguIEkgbGlrZSB0aGlzIGNhbGN1bGF0aW9uIGJlY2F1c2UgdGhleSB0YWtlIHRoZSBjb3N0IG9mIGxpdmluZyBpbmRleCBmb3IgZWFjaCBjaXR5IGluIGEgc3RhdGUgYW5kIGF2ZXJhZ2UgaXQgdG8gbWFrZSBhIHN0YXRlIGNvc3Qgb2YgbGl2aW5nIGluZGV4Lg0KDQpgYGB7cn0NCg0Kc2NyYXBlX3VybCA8LSAiaHR0cHM6Ly9tZXJpYy5tby5nb3YvZGF0YS9jb3N0LWxpdmluZy1kYXRhLXNlcmllcyINCndlYnBhZ2UgPC0gcmVhZF9odG1sKHNjcmFwZV91cmwpDQp3ZWJfdGFibGVzIDwtIGh0bWxfbm9kZXMod2VicGFnZSwgInRhYmxlIikNCnN0YXRlX2xpc3QgPC0gaHRtbF90YWJsZSh3ZWJfdGFibGVzKVtbMV1dDQoNCmdsaW1wc2Uoc3RhdGVfbGlzdCkNCg0KYGBgDQoNCk5vdywgSSdtIGNvbWJpbmluZyBib3RoIGRhdGEtc2V0cyBpbnRvIG9uZS4gSSdtIGFsc28gY2xlYW5pbmcgdGhlIGRhdGEgYSBiaXQgYXMgd2UgYXJlbid0IGdvaW5nIHRvIGJlIG5lZWRpbmcgYSBsb3Qgb2YgdGhlIGluZm9ybWF0aW9uIGZyb20gdGhlIE1FUklDIGRhdGEtc2V0DQoNCmBgYHtyfQ0KDQpjb2xfaW5kZXggPC0gZmlsdGVyKHN0YXRlX2xpc3QsICFncmVwbCgiRGlzdHJpY3Qgb2YgQ29sdW1iaWF8UHVlcnRvIFJpY298VVMiLCBTdGF0ZSkpICU+JQ0KICBhcnJhbmdlKFN0YXRlKQ0Kc2FsYXJ5X2RhdGEgPC0gaW5uZXJfam9pbihyYXdfc2FsYXJ5X2RhdGEsIGNvbF9pbmRleCwgYnkgPSBjKCJhcmVhX3RpdGxlIiA9ICJTdGF0ZSIpKQ0KDQoNCmdsaW1wc2UoY29sX2luZGV4KQ0KDQpgYGANCg0KRmluYWxseSB3ZSdyZSBnb2luZyB0byBub3JtYWxpemUgYWxsIHRoZSBzYWxhcmllcyB3aXRoIG91ciBjb3N0IG9mIGxpdmluZyBpbmRleCBhbmQgcGxvdCBpdCBvbiBhIGNoYXJ0IHRvIHNlZSB3aGljaCBzdGF0ZXMgdHlwaWNhbGx5IGhhdmUgdGhlIGhpZ2hlc3Qgc2FsYXJpZXMgY29tcGFyZWQgdG8gdGhlaXIgcmVzcGVjdGl2ZSBjb3N0IG9mIGxpdmluZy4gDQoNCmBgYHtyfQ0KDQpzYWxhcnlfZGF0YSRub3JtYWxpemVkID0gYXMubnVtZXJpYyhzYWxhcnlfZGF0YSRhX21lYW4pIC8gKHNhbGFyeV9kYXRhJEluZGV4LzEwMCkNCg0KcGxvdF9zYWxfZGF0YSA8LSBmdW5jdGlvbih4LCB5KXsNCiANCnNhbGFyeV9wbG90IDwtIGdncGxvdChzYWxhcnlfZGF0YSkgKw0KICB0aGVtZShheGlzLnRleHQueCA9IGVsZW1lbnRfdGV4dChhbmdsZSA9IDQ1KSkrDQogICAgZ2VvbV9jb2wobWFwcGluZyA9IGFlcyh4LCB5KSkNCiAgDQpwcmludChzYWxhcnlfcGxvdCkNCiAgICB9DQoNCnBsb3Rfc2FsX2RhdGEoYXJlYV90aXRsZSwgYV9tZWFuKQ0KDQoNCmBgYA==</div>
 
 
 

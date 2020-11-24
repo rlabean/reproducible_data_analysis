@@ -1,0 +1,54 @@
+---
+title: "Geoscience Salary Survey"
+output: html_notebook
+author: Robert LaBean
+---
+
+```{r echo=FALSE}
+
+library(tidyverse)
+library(readxl)
+library(rvest)
+
+```
+
+Accessing the Bureau of Labor Statistics most current state salary data.
+
+```{r}
+
+url <- "https://www.bls.gov/oes/special.requests/oesm19st.zip"
+
+temp <- tempfile()
+temp2 <- tempfile()
+
+download.file(url, temp)
+unzip(zipfile = temp, exdir = temp2)
+raw_salary_data <- read_excel(file.path(temp2, "oesm19st/state_M2019_dl.xlsx"))
+
+unlink(c(temp, temp2))
+
+```
+
+Next, we're going to scrape the Missouri Economic Research and Information Center (MERIC) web page an use their calculation for a cost of living index. I like this calculation because they take the cost of living index for each city in a state and average it to make a state cost of living index.
+
+```{r}
+
+scrape_url <- "https://meric.mo.gov/data/cost-living-data-series"
+webpage <- read_html(scrape_url)
+web_tables <- html_nodes(webpage, "table")
+state_list <- html_table(web_tables)[[1]]
+
+glimpse(state_list)
+
+```
+
+Now, I'm combining both data-sets into one. I'm also cleaning the data a bit as we aren't going to be needing a lot of the information from the MERIC data-set
+
+```{r}
+
+costlive_index <- select(state_list, State, Index) %>%
+  filter(state_list, state == "!Puerto Rico" , state == "!District of Columbia")
+glimpse(state_list)
+
+
+```

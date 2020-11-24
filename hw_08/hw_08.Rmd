@@ -9,6 +9,7 @@ output: github_document
 library(tidyverse)
 library(nycflights13)
 library(babynames)
+library(readxl)
 
 ```
 
@@ -59,19 +60,27 @@ as.numeric(num.vec)
 Load the BLS 2019 National Salary Data for all occupations, and since we're only interested in geoscientist data we will filter them out. 
 
 ```{r, tidy=TRUE}
-# salary_data <- readxl::read_excel("data/salary_data.xlsx")
-salary_data <- read_csv("data/salary_data.csv") %>%
+
+salary_data <- read_xlsx("data/state_M2019_dl.xlsx") %>%
   filter(occ_code == "19-2042") %>%
   select(area_title, a_mean)
-glimpse(salary_data)
+  glimpse(salary_data)
 ```
 Since we want to compare the data state by state, we need to normalize by a cost of living index.
 ``` {r, tidy = TRUE}
 
 col_index <- read.csv("data/col_index.csv", fileEncoding = "UTF-8-BOM")
 norm_salary_data <- left_join(salary_data, col_index)
-as.numeric(gsub(",", "", salary_data$a_mean)
+norm_salary_data$normalized = as.numeric(norm_salary_data$a_mean) / norm_salary_data$index
 glimpse(norm_salary_data)
 
 ```
 
+Now, let's plot it on a bar chart so it looks nice.
+
+```{r}
+
+salary_plot <- ggplot(norm_salary_data) + 
+  geom_col(mapping = aes(area_title, normalized))+
+  theme(axis.text.x = element_text(angle = 45))
+print(salary_plot)

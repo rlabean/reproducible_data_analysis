@@ -80,11 +80,13 @@ glimpse(norm_salary_data)
 
 ```
 
-Now, let's plot it on a bar chart so it looks nice.
+Now, let's plot it on a bar chart so it looks good. 
 
-```{r}
+```{r, tidy=TRUE}
 
 salary_plot <- ggplot(norm_salary_data) + 
   geom_col(mapping = aes(area_title, normalized))+
-  theme(axis.text.x = element_text(angle = 45))
+  theme(axis.text.x = element_text(angle = 90))
 print(salary_plot)
+
+```

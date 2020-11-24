@@ -57,20 +57,23 @@ as.factor(num.vec)
 as.numeric(num.vec)
 
 ```
+
 Load the BLS 2019 National Salary Data for all occupations, and since we're only interested in geoscientist data we will filter them out. 
 
 ```{r, tidy=TRUE}
 
-salary_data <- read_xlsx("data/state_M2019_dl.xlsx") %>%
+salary_data <- read_xlsx("data/state_M2019_dl.xlsx") %>% # This data-set available at https://www.bls.gov/oes/#data
   filter(occ_code == "19-2042") %>%
   select(area_title, a_mean)
   glimpse(salary_data)
   
 ```
+
 Since we want to compare the data state by state, we need to normalize by a cost of living index.
+
 ``` {r, tidy = TRUE}
 
-col_index <- read.csv("data/col_index.csv", fileEncoding = "UTF-8-BOM")
+col_index <- read.csv("data/col_index.csv", fileEncoding = "UTF-8-BOM") # Most any cost of living index can be used as we are comparing states to one another. 
 norm_salary_data <- left_join(salary_data, col_index)
 norm_salary_data$normalized = as.numeric(norm_salary_data$a_mean) / norm_salary_data$index
 glimpse(norm_salary_data)

@@ -48,7 +48,11 @@ Now, I'm combining both data-sets into one. I'm also cleaning the data a bit as 
 
 col_index <- filter(state_list, !grepl("District of Columbia|Puerto Rico|US", State)) %>%
   arrange(State)
-salary_data <- inner_join(raw_salary_data, col_index, by = c("area_title" = "State"))
+
+salary_data <- inner_join(raw_salary_data, col_index, by = c("area_title" = "State")) %>%
+  filter(occ_code == "19-2042")
+
+salary_data$normalized = as.numeric(salary_data$a_mean) / (salary_data$Index/100)
 
 
 glimpse(col_index)
@@ -59,18 +63,39 @@ Finally we're going to normalize all the salaries with our cost of living index 
 
 ```{r}
 
-salary_data$normalized = as.numeric(salary_data$a_mean) / (salary_data$Index/100)
 
-plot_sal_data <- function(x, y){
- 
-salary_plot <- ggplot(salary_data) +
-  theme(axis.text.x = element_text(angle = 45))+
-    geom_col(mapping = aes(x, y))
+# plot_sal_data <- function(occ_code, x, y){
+#   filter(salary_data, occ_code == occ_code)
+#   
+# salary_plot <- ggplot(salary_data) +
+#   theme(axis.text.x = element_text(angle = 90)+
+#     geom_col(mapping = aes(x, y)))
+#   
+# print(salary_plot)
+#     }
+# 
+# plot_sal_data("19-2042", salary_data$area_title, salary_data$a_mean)
+# plot_sal_data("19-2042", salary_data$area_title, salary_data$normalized)
+
+
+salary_plot2 <- ggplot(salary_data) +
+  theme_light()+
+  theme(axis.text.x = element_text(angle = 90, vjust = 0, hjust = 1), 
+        axis.title.x = element_blank(), legend.position = "left")+
+  labs(title = "Average Geoscientist Salary", y ="Annual Salary (USD)")+
+  geom_col(mapping = aes(area_title, normalized), width = 0.8,
+           fill = "black", color = "black")+
+  geom_col(mapping = aes(area_title, as.numeric(a_mean)),width = 0.3, fill = "red")+
+  scale_y_continuous(limits = c(0, 175000), breaks = seq(0, 175000, 25000), 
+                     labels = c("0" = "$0", "25000" = "$25k", "50000" = "$50k", 
+                                "75000" = "$75k", "100000" = "$100k", 
+                                "125000" = "$125k", "150000" = "$150k", 
+                                "175000" = "$175k"))
   
-print(salary_plot)
-    }
 
-plot_sal_data(area_title, a_mean)
+
+  
+print(salary_plot2)
 
 
 ```

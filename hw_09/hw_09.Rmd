@@ -5,44 +5,78 @@ author: Robert LaBean
 ---
 
 ```{r}
+
 library(tidyverse)
 
 ```
 
+(1)
 
 First, let's write the equations for variance.
 
-# ```{r}
-# 
-# variance <- function(x, sample_mean){
-#   varx <- (1/(x-1))*sum(1:x)*()
-# }
-# 
-# ```
+```{r}
+
+variancefunc <- function(x){
+  
+  sum(((x - mean(x)))^2)/(length(x)-1)
+  
+}
+
+var_test <- sample(1:99999, 500)
+
+```
+
+Now let's test our function using the built in variance function.
+
+``` {r}
+
+variancefunc(var_test)
+var(var_test)
+
+```
+
+(2)
 
 ```{r}
 
-normalize_salary <- function(occ_code) {
-  library(readxl)
-  salary_data <- read_xlsx("data/state_M2019_dl.xlsx") %>%
-  filter(occ_code == "occ_code") %>%
-  select(area_title, a_mean)
-  col_index <- read.csv("data/col_index.csv", fileEncoding = "UTF-8-BOM")
-norm_salary_data <- left_join(salary_data, col_index)
-norm_salary_data$normalized = as.numeric(norm_salary_data$a_mean) / norm_salary_data$index
-
-salary_plot <- ggplot(norm_salary_data) + 
-  geom_col(mapping = aes(area_title, normalized))+
-  theme(axis.text.x = element_text(angle = 45))
-print(salary_plot)
+both_na <- function(x, y){
+  
+  sum(is.na(x) & is.na(y))
+  
 }
 
 ```
 
-Running our function
+Test the function
 
 ```{r}
 
-normalize_salary(11-3131)
+na_1 <- c(1, 3, 5, NA, 7, NA, 8, 9, NA, NA, NA, 10, 19, NA)
+na_2 <- c(NA, 1, 2, 3, NA, NA, NA, NA, NA, NA, NA, NA, 20, NA)
+
+both_na(na_1, na_2)
 
 ```
+
+(3)
+
+```{r}
+
+plot_df <- function(df, x, y, title, title_x, title_y){
+  
+ggplot(df)+
+    geom_point(mapping = aes(x, y))+
+    labs(title = title, x = title_x, y = title_y)
+}
+
+```
+
+Test
+
+```{r}
+
+plot_df(mtcars, mtcars$mpg, mtcars$hp, "mpg vs hp", "mpg", "hp")
+
+```
+
+

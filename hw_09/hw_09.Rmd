@@ -4,7 +4,7 @@ output: github_document
 author: Robert LaBean
 ---
 
-```{r}
+```{r message=FALSE}
 
 library(tidyverse)
 
@@ -12,9 +12,11 @@ library(tidyverse)
 
 (1)
 
-Following R for Data Science exercise 19.2.1.4, write a function to calculate the variance of a numeric vector. Be sure that the function auto-prints the result if the result is not assigned to a variable.
+Following R for Data Science exercise 19.2.1.4, write a function to calculate the 
+variance of a numeric vector. Be sure that the function auto-prints the result if
+the result is not assigned to a variable.
 
-```{r}
+```{r message=FALSE}
 
 variancefunc <- function(x){
   
@@ -28,8 +30,8 @@ var_test <- sample(1:99999, 500)
 
 Now let's test our function using the built in variance function.
 
-``` {r}
-
+``` {r message=FALSE}
+  
 vartest1 <- variancefunc(var_test)
 vartestctrl <- var(var_test)
 
@@ -40,9 +42,10 @@ print(vartestctrl)
 
 (2)
 
-Write both_na(), a function that takes two vectors of the same length and returns the number of positions that have an NA in both vectors.
+Write both_na(), a function that takes two vectors of the same length and returns 
+the number of positions that have an NA in both vectors.
 
-```{r}
+```{r message=FALSE}
 
 both_na <- function(x, y){
   
@@ -54,7 +57,7 @@ both_na <- function(x, y){
 
 Test the function
 
-```{r}
+```{r message=FALSE}
 
 na_1 <- c(1, 3, 5, NA, 7, NA, 8, 9, NA, NA, NA, 10, 19, NA)
 na_2 <- c(NA, 1, 2, 3, NA, NA, NA, NA, NA, NA, NA, NA, 20, NA)
@@ -66,9 +69,11 @@ print(bnatest)
 ```
 
 (3)
-Write a function to create a specific kind of plot, with useful labels, etc., that can take a data frame as an argument. This is useful when you want to make multiple, similar plots from different data.
+Write a function to create a specific kind of plot, with useful labels, etc., 
+that can take a data frame as an argument. This is useful when you want to make 
+multiple, similar plots from different data.
 
-```{r}
+```{r message=FALSE}
 
 plot_df <- function(df, x, y, title, title_x, title_y){
   
@@ -81,7 +86,7 @@ ggplot(df)+
 
 Test
 
-```{r}
+```{r message=FALSE}
 
 plot_df(mtcars, mtcars$mpg, mtcars$hp, "mpg vs hp", "mpg", "hp")
 
@@ -92,9 +97,10 @@ Write a function that takes one argument and does the following:
 
   if the argument is a numeric vector, multiplies every number in the vector by 2
   if the argument is a character vector, sorts the vector into alphabetical order
-  if the argument is anything else, issues an informative warning and returns the argument unchanged
+  if the argument is anything else, issues an informative warning and returns the 
+  argument unchanged
   
-```{r}
+```{r message=FALSE}
 
 fun_vect <- function(x){
   
@@ -113,7 +119,7 @@ fun_vect <- function(x){
 
 Test
 
-```{r}
+```{r message=FALSE}
 
 fun_test <- sample(1:100, 75)
 fun_test_char <- c("a", "b", "c", "d")
@@ -128,9 +134,11 @@ print(test2)
 
 (5)
 
-Write a function that tries to calculate the mean of a vector using mean(). If that is successful, it returns the mean of the vector. If mean() throws an error, it issues an informative message and returns the input intact.
+Write a function that tries to calculate the mean of a vector using mean(). If 
+that is successful, it returns the mean of the vector. If mean() throws an error, 
+it issues an informative message and returns the input intact.
 
-```{r}
+```{r message=FALSE}
 
 mean_test <- function(x){
   ifelse(is.numeric(x), mean(x), warning("X is not a numeric vector and the mean cannot be found"))
@@ -140,7 +148,7 @@ mean_test <- function(x){
 
 Test
 
-```{r}
+```{r message=FALSE}
 
 mean_test_vec1 <- sample(1:99999, 500)
 mean_test_vec2 <- c(1, 3, "d", "e")
@@ -154,7 +162,9 @@ print(mtest)
 
 (6)
 
-Use system.time() (or, if you want to be more advanced about it, the bench or microbenchmark packages) to compare how long it takes to add two, 1-million-element random vectors and store the result in a third vector:
+Use system.time() (or, if you want to be more advanced about it, the bench or 
+microbenchmark packages) to compare how long it takes to add two, 1-million-element
+random vectors and store the result in a third vector:
 
  a. Using any vectorized operation (e.g., `+`)
  b. Using a for loop with a pre-allocated vector to store the results
@@ -162,11 +172,9 @@ Use system.time() (or, if you want to be more advanced about it, the bench or mi
  
 ```{r}
 
-# stime1 <- system.time()
 sum_time <- system.time(sample(1:10, 1000000, replace = TRUE) + 
                           sample(1:10, 1000000, replace = TRUE))
-# stime2 <- system.time()
-# runtime <- stime2 - stime1
+
 print(sum_time)
 
 big_sum <- sample(1:10, 1000000, replace = TRUE)
@@ -179,7 +187,13 @@ sum_time2 <- system.time(
 )
 print(sum_time2)
 
-sum_time3 <- system.time()
+# This needs to run overnight as it takes a VERY long time. 
+
+sum_time3 <- system.time(
+  for (i in 1:1000000) {
+    sample(1:10, 1000000, replace = TRUE)[i] + sample(1:10, 1000000, replace = TRUE)[i] 
+  }
+)
 print(sum_time3)
 
 ```

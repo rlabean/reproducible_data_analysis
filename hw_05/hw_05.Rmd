@@ -5,7 +5,7 @@ author: Robert LaBean
 ---
 
 
-```{r include = FALSE}
+```{r message=FALSE}
 
 
 library(tidyverse)
@@ -14,25 +14,25 @@ library(dplyr)
 
 ```
 
-Code to open documention about flights.
-```{r}
+Code to open documentation about flights.
+```{r message=FALSE}
 
 ?nycflights13::flights
 
 ```
 
 Using the glimpse function to look at the data inside flights.
-```{r}
+```{r message=FALSE}
 
 glimpse(flights)
 
 ```
 There are `r nrow(flights)` rows in flights and `r ncol(flights)` columns.
 
-Create a dataframe of only flights that departed 2 hours late or more.
-```{r} 
+Create a data-frame of only flights that departed 2 hours late or more.
+```{r message=FALSE} 
 
-late_flights <- filter(flights, dep_delay >=2) 
+late_flights <- filter(flights, dep_delay >= 120) 
 percent_late_flights <-
   signif((nrow(late_flights)/nrow(flights))*100,3)
 percent_late_flights # This is the percentage of flights that departed 2 hours late or later,
@@ -43,14 +43,15 @@ percent_late_flights # This is the percentage of flights that departed 2 hours l
 `r percent_late_flights`% of flights in 2013 were 2 hours late or more. 
 
 Create a column that contains combined airline and flight number (e.g., "UA5401").
-```{r}
+```{r message=FALSE}
 
 airline_num <- mutate(flights, flightnum = paste0(flights$carrier, flights$flight))
 airline_num # This column is carrier + flight number
 
 ```
 
-Use group_by(), summarise(), and n() to make a data frame showing how many flights each aircraft (tail_num()) flew for each carrier throughout the entire data set. 
+Use `group_by()`, `summarise()`, and `n()` to make a data frame showing how many 
+flights each aircraft (`tail_num()`) flew for each carrier throughout the entire data set. 
 ```{r}
 
 num_flight_tot <- flights %>%

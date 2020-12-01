@@ -3,42 +3,61 @@ title: "Homework 10"
 output: github_document
 author: Robert LaBean
 ---
-``` {r echo = FALSE}
+``` {r message = FALSE}
 
 library(tidyverse)
 
 ```
 
-Generating a linear model for the diamonds data-set.
+(1)
 
-```{r}
+Using the `diamonds` dataset, create a linear model of price as a function of the
+weight of the diamond (`carat`). According to that model, what price would you 
+expect for a 1-carat diamond?
+```{r message=FALSE}
 
 lm_diamonds <- lm(diamonds$price ~ diamonds$carat)
 summary(lm_diamonds)
 
 ```
 
-Now we want to make a model of price as a function of carat and color.
+(2)
 
-``` {r}
+Now create a linear model of `price` as a function of `carat` and `color`.
+
+``` {r message=FALSE}
 
 lm_diamonds2 <- lm(diamonds$price ~ diamonds$carat + diamonds$color)
 summary(lm_diamonds2)
 
-# I'm doing two models to see what the difference in coercing diamonds$color into a character vector first has. 
+# I'm doing two models to see what the difference in coercing diamonds$color 
+# into a character vector first has. 
 
 lm_diamonds3 <- lm(diamonds$price ~ diamonds$carat + as.character(diamonds$color))
 summary(lm_diamonds2)
 
 ```
 
-Now we are going to plot the raw data. 
+(3)
 
-```{r}
+Make some plots of the raw data, and of the model fits, to make an argument as to which model is more useful.
+
+```{r message=FALSE}
 diam_plot_pc <- ggplot(diamonds) + 
   geom_point(mapping = aes(x = carat, y = price, colour = color)) +
-  geom_line()
+  geom_smooth(method ='lm', mapping = aes(x = carat, y = price))
+
 print(diam_plot_pc)
 
 ```
 
+(4)
+
+Write a function that returns some kind of structured result, which you define as
+a new S3 class. Your class doesn’t need to be anything fancy, but it should be 
+different from existing classes.
+
+```{r message=FALSE}
+
+
+```

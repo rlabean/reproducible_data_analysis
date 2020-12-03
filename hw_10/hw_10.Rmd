@@ -58,6 +58,38 @@ a new S3 class. Your class doesn’t need to be anything fancy, but it should be
 different from existing classes.
 
 ```{r message=FALSE}
+good_couch <- function(
+  is_comfy = TRUE, 
+  my_favorite = "by window"
+){
 
+couch <- list(
+  has_cushion = is_comfy, 
+  favorite_spot = my_favorite
+)
 
+class(couch) <- append(class(couch), "good_couch")
+return(couch)
+}
+my_couch <- good_couch()
+my_couch
+
+```
+
+(5)
+
+Write `print` and `summarise` methods for this class. These methods don’t need to be particularly useful, but they should be different from the default methods.
+
+```{r message=FALSE}
+
+print.good_couch <- function(x){
+  cat("Print good_couch")
+}
+print(my_couch)
+
+summarise.good_couch <- function(x){
+  cat("summarise good_couch")
+}
+
+summarise(my_couch)
 ```

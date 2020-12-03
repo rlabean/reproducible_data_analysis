@@ -4,7 +4,7 @@ output: html_notebook
 author: Robert LaBean
 ---
 
-```{r echo=FALSE}
+```{r message=FALSE}
 
 library(tidyverse)
 library(readxl)
@@ -14,7 +14,7 @@ library(rvest)
 
 Accessing the Bureau of Labor Statistics most current state salary data.
 
-```{r}
+```{r message=FALSE}
 
 url <- "https://www.bls.gov/oes/special.requests/oesm19st.zip"
 
@@ -31,7 +31,7 @@ unlink(c(temp, temp2))
 
 Next, we're going to scrape the Missouri Economic Research and Information Center (MERIC) web page an use their calculation for a cost of living index. I like this calculation because they take the cost of living index for each city in a state and average it to make a state cost of living index.
 
-```{r}
+```{r message=FALSE}
 
 scrape_url <- "https://meric.mo.gov/data/cost-living-data-series"
 webpage <- read_html(scrape_url)
@@ -44,7 +44,7 @@ glimpse(state_list)
 
 Now, I'm combining both data-sets into one. I'm also cleaning the data a bit as we aren't going to be needing a lot of the information from the MERIC data-set
 
-```{r}
+```{r message=FALSE}
 
 col_index <- filter(state_list, !grepl("District of Columbia|Puerto Rico|US", State)) %>%
   arrange(State)
@@ -54,6 +54,12 @@ salary_data <- inner_join(raw_salary_data, col_index, by = c("area_title" = "Sta
 
 salary_data$normalized = as.numeric(salary_data$a_mean) / (salary_data$Index/100)
 
+# Calculating the normalized 75th percentile salaries
+salary_data$pct75_norm = as.numeric(salary_data$a_pct75) / (salary_data$Index/100)
+
+salary_data$ranking = ((salary_data$normalized * as.numeric(salary_data$loc_quotient))) / as.numeric(max(salary_data$loc_quotient)) 
+
+salary_data$rank2 <- salary_data$ranking / max(salary_data$ranking, na.rm = TRUE)
 
 glimpse(col_index)
 
@@ -61,7 +67,7 @@ glimpse(col_index)
 
 Finally we're going to normalize all the salaries with our cost of living index and plot it on a chart to see which states typically have the highest salaries compared to their respective cost of living. 
 
-```{r}
+```{r message=FALSE}
 
 
 # plot_sal_data <- function(occ_code, x, y){
@@ -79,23 +85,124 @@ Finally we're going to normalize all the salaries with our cost of living index 
 
 
 salary_plot2 <- ggplot(salary_data) +
-  theme_light()+
-  theme(axis.text.x = element_text(angle = 90, vjust = 0, hjust = 1), 
-        axis.title.x = element_blank(), legend.position = "left")+
-  labs(title = "Average Geoscientist Salary", y ="Annual Salary (USD)")+
-  geom_col(mapping = aes(area_title, normalized), width = 0.8,
-           fill = "black", color = "black")+
-  geom_col(mapping = aes(area_title, as.numeric(a_mean)),width = 0.3, fill = "red")+
-  scale_y_continuous(limits = c(0, 175000), breaks = seq(0, 175000, 25000), 
+  theme_light(
+  )+
+  theme(
+    axis.text.x = element_text(angle = 90,
+                                   vjust = 0,
+                                   hjust = 1),
+        legend.position = "right"
+    ) +
+  labs(
+    title = "Average Geoscientist Salary",
+       y ="Annual Salary (USD)",
+       x = "Mean Annual Salary in Red, Normalized by Cost of
+       Living Index in Black"
+    ) +
+  geom_col(
+    mapping = aes(area_title, normalized), 
+           width = 0.8,
+           fill = "black", 
+           color = "black"
+           ) +
+  geom_col(
+    mapping = aes(area_title, as.numeric(a_mean)),
+           width = 0.3, 
+           fill = "red"
+           ) +
+  scale_y_continuous(
+    limits = c(0, 175000), 
+                     breaks = seq(0, 175000, 25000), 
                      labels = c("0" = "$0", "25000" = "$25k", "50000" = "$50k", 
                                 "75000" = "$75k", "100000" = "$100k", 
                                 "125000" = "$125k", "150000" = "$150k", 
-                                "175000" = "$175k"))
-  
+                                "175000" = "$175k")
+    )
 
+```
 
-  
+75th Percentile Plots
+
+``` {r message = FALSE}
+
+salary_plot3 <- ggplot(salary_data) +
+  theme_light(
+  )+
+  theme(
+    axis.text.x = element_text(angle = 90,
+                                   vjust = 0,
+                                   hjust = 1, 
+                               size = 10
+                               ),
+        legend.position = "right"
+    ) +
+  labs(
+    title = "75th Percentile Geoscientist Salary",
+       y ="75th Percentile Salary (USD)",
+       x = "75th Percentile Annual Salary in Red, Normalized by Cost of
+       Living Index in Black"
+    ) +
+  geom_col(
+    mapping = aes(area_title, pct75_norm), 
+           width = 0.8,
+           fill = "black", 
+           color = "black"
+           ) +
+  geom_col(
+    mapping = aes(area_title, as.numeric(a_pct75)),
+           width = 0.3, 
+           fill = "red"
+           ) +
+  scale_y_continuous(
+    limits = c(0, 225000), 
+                     breaks = seq(0, 225000, 25000), 
+                     labels = c("0" = "$0", "25000" = "$25k", "50000" = "$50k", 
+                                "75000" = "$75k", "100000" = "$100k", 
+                                "125000" = "$125k", "150000" = "$150k", 
+                                "175000" = "$175k", "200000" = "$200k", "225000" = "$225k")
+    )
+
+```
+
+Print plots
+```{r}
+
+ggsave("salary_plot2.png", width = 20, height = 10, limitsize = FALSE)
+
 print(salary_plot2)
 
+ggsave("salary_plot3.png", width = 20, height = 10, limitsize = FALSE)
+print(salary_plot3)
+
+```
+
+```{r message=FALSE}
+
+ranking_index = arrange(salary_data, rank2)
+
+rank_plot1 <- ggplot(salary_data) +
+  theme_light(
+  )+
+  theme(
+    axis.text.x = element_text(angle = 90,
+                                   vjust = 0,
+                                   hjust = 1, 
+                               size = 10
+                               ),
+        legend.position = "right"
+    ) +
+  labs(
+    title = "Best Career Locations for Geoscientists 2019",
+       y ="Rank",
+       x = ""
+    ) +
+  geom_col(
+    mapping = aes(x = reorder(area_title, -rank2), rank2),
+           fill = "black", 
+           color = "black",
+    width = 0.8
+           )
+ggsave("rank_plot1.png", width = 20, height = 10, limitsize = FALSE)
+print(rank_plot1)
 
 ```

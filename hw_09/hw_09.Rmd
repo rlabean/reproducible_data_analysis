@@ -188,13 +188,15 @@ sum_time2 <- system.time(
 print(sum_time2)
 
 # This needs to run overnight as it takes a VERY long time. 
+# This takes entirely too long to run. Over 8 hours.
+# Tested to 100,000 and it took ~20 minutes.
 
-sum_time3 <- system.time(
-  for (i in 1:1000000) {
-    sample(1:10, 1000000, replace = TRUE)[i] + sample(1:10, 1000000, replace = TRUE)[i] 
-  }
-)
-print(sum_time3)
+# sum_time3 <- system.time(
+#   for (i in 1:1000000) {
+#     sample(1:10, 1000000, replace = TRUE)[i] + sample(1:10, 1000000, replace = TRUE)[i] 
+#   }
+# )
+# print(sum_time3)
 
 ```
 

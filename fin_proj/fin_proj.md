@@ -74,6 +74,9 @@ salary_data$pct75_norm = as.numeric(salary_data$a_pct75) / (salary_data$Index/10
     ## Warning: NAs introduced by coercion
 
 ``` r
+# Here I'm creating a sort of 'ranking' system by 
+# multiplying the normalized salary by the location
+# quotient
 salary_data$ranking = ((salary_data$normalized * as.numeric(salary_data$loc_quotient))) / as.numeric(max(salary_data$loc_quotient)) 
 ```
 
@@ -102,20 +105,6 @@ living index and plot it on a chart to see which states typically have
 the highest salaries compared to their respective cost of living.
 
 ``` r
-# plot_sal_data <- function(occ_code, x, y){
-#   filter(salary_data, occ_code == occ_code)
-#   
-# salary_plot <- ggplot(salary_data) +
-#   theme(axis.text.x = element_text(angle = 90)+
-#     geom_col(mapping = aes(x, y)))
-#   
-# print(salary_plot)
-#     }
-# 
-# plot_sal_data("19-2042", salary_data$area_title, salary_data$a_mean)
-# plot_sal_data("19-2042", salary_data$area_title, salary_data$normalized)
-
-
 salary_plot2 <- ggplot(salary_data) +
   theme_light(
   )+
@@ -152,7 +141,9 @@ salary_plot2 <- ggplot(salary_data) +
     )
 ```
 
-75th Percentile Plots
+75th Percentile Plots - I added these plots because I was curious
+whether California and New York might have much higher salaries than the
+mean shows, but it didn’t change much.
 
 ``` r
 salary_plot3 <- ggplot(salary_data) +
@@ -244,6 +235,9 @@ print(salary_plot3)
     ## (position_stack).
 
 ![](fin_proj_files/figure-gfm/unnamed-chunk-7-2.png)<!-- -->
+
+Here I attempted to make a sort of ‘ranking’ system, but the math
+methodology could be better.
 
 ``` r
 ranking_index = arrange(salary_data, rank2)

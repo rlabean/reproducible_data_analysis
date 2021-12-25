@@ -5,6 +5,7 @@ author: Robert LaBean
 ---
 
 ```{r message=FALSE}
+start_time <- Sys.time()
 
 library(tidyverse)
 library(readxl)
@@ -195,4 +196,9 @@ rank_plot1 <- ggplot(salary_data) +
 ggsave("rank_plot1.png", width = 20, height = 10, limitsize = FALSE)
 print(rank_plot1)
 
+end_time <- Sys.time()
+
+run_time <- end_time - start_time
+
+print(run_time)
 ```

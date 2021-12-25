@@ -18,7 +18,9 @@ url <- "https://www.bls.gov/oes/special.requests/oesm19st.zip"
 temp <- tempfile()
 temp2 <- tempfile()
 
+dstart_time <- Sys.time()
 download.file(url, temp)
+den_time <- Sys.time()
 unzip(zipfile = temp, exdir = temp2)
 raw_salary_data <- read_excel(file.path(temp2, "oesm19st/state_M2019_dl.xlsx"))
 
@@ -282,9 +284,9 @@ print(rank_plot1)
 ``` r
 end_time <- Sys.time()
 
-run_time <- end_time - start_time
+run_time <- end_time - start_time - (den_time - dstart_time)
 
 print(run_time)
 ```
 
-    ## Time difference of 10.71613 secs
+    ## Time difference of 6.72233 secs
